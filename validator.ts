@@ -30,9 +30,7 @@ export const rules = {
       : error),
 };
   
-export default (...fns : Function[] ) => (x : number | string | object | Array<object>) : string | false  => {
-  let error : string = '';
-
+export default (...fns : Function[] ) => (x : number | string | object | Array<object>) : string  => {
   try {
     fns.reduce((a, f) => {
       const currentError : string | false = f(a);
@@ -42,9 +40,9 @@ export default (...fns : Function[] ) => (x : number | string | object | Array<o
       return a;
     }, x);
   } catch (e) {
-    error = e.message;
+    return e.message;
   }
 
-  return error;
+  return '';
 };
   
