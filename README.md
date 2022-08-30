@@ -4,7 +4,9 @@ String, number, Object and Object[] validate
 
 ## Import
 
+```
 import validator, { rules } from './validator';
+```
 
 ## How to validate data
 
