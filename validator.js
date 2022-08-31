@@ -51,10 +51,10 @@ exports["default"] = (function () {
             }, x);
         }
         catch (e) {
-            if (typeof e === "string") {
+            if (typeof e === 'string') {
                 return e;
             }
-            else if (e instanceof Error) {
+            if (e instanceof Error) {
                 return e.message;
             }
         }

@@ -1,5 +1,5 @@
-type ErrorType = string | undefined
-type Rule = string | false
+type ErrorType = string | undefined;
+type Rule = string | false;
 
 interface IRules {
   isRequired: (e?: ErrorType) => (data: string | object | Array<Object>) => Rule;
@@ -28,7 +28,7 @@ export const rules : IRules = {
 
   isYearBorn: (error = 'Год рождения некорректен') =>
     (data) => (+data < (new Date().getFullYear() - 110) || +data >= new Date().getFullYear()
-      ? error 
+      ? error
       : false),
 
   isLink: (error = 'Неверный формат ссылки') =>
@@ -37,24 +37,25 @@ export const rules : IRules = {
       ? false
       : error),
 };
-  
-export default (...fns : Function[] ) => (x : number | string | object | Array<object>) : string  => {
-  try {
-    fns.reduce((a, f) => {
-      const currentError : string | false = f(a);
-      if (currentError) {
-        throw new Error(currentError);
-      }
-      return a;
-    }, x);
-  } catch (e) {
-    if (typeof e === "string") {
-      return e
-    } else if (e instanceof Error) {
-      return e.message
-    }
-  }
 
-  return '';
-};
-  
+export default (...fns : Function[]) =>
+  (x : number | string | object | Array<object>) : string => {
+    try {
+      fns.reduce((a, f) => {
+        const currentError : string | false = f(a);
+        if (currentError) {
+          throw new Error(currentError);
+        }
+        return a;
+      }, x);
+    } catch (e) {
+      if (typeof e === 'string') {
+        return e;
+      }
+      if (e instanceof Error) {
+        return e.message;
+      }
+    }
+
+    return '';
+  };
