@@ -1,6 +1,6 @@
 # Validator
 
-String, number, Object and Object[] validate
+Validate data by rules
 
 ## Import
 
@@ -12,7 +12,8 @@ import validator, { rules } from './validator';
 
 ```
 validate(
-    rules.isRequired('Error text'),
+    rules.isRequired({ msg: 'Empty!' }),
+    rules.min({ len: 6, msg: 'Too short!' }),
     rules. ...
     ...
 )(data);
@@ -25,4 +26,10 @@ rules.isRequired()
 rules.isEmail()
 rules.isYearBorn()
 rules.isLink()
+rules.min()
+rules.max()
 ```
+
+## Return
+
+Validator returns first error message or empty string if data is correct

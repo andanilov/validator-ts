@@ -1,45 +1,65 @@
-type ErrorType = string | undefined;
-type Rule = string | false;
+// type Rule = string | false;
+type ValidateResult = number | string | object | Array<object>;
+export type Fnctn = (a?: ValidateResult) => string | false;
 
-interface IRules {
-  isRequired: (e?: ErrorType) => (data: string | object | Array<Object>) => Rule;
-  isEmail: (e?: ErrorType) => (data: string) => Rule;
-  isYearBorn: (e?: ErrorType) => (data: string | number) => Rule;
-  isLink: (e?: ErrorType) => (data: string) => Rule;
+export interface IRuleArguments {
+  msg?: string, 
+  len?: number,
+}
+
+type Rule = (argv : IRuleArguments) => Fnctn;
+
+export interface IRules {
+  isRequired: Rule;
+  isEmail: Rule;
+  isYearBorn: Rule;
+  isLink: Rule;
+  min: Rule;
+  max: Rule;
 }
 
 export const rules : IRules = {
-  isRequired: (error = 'Обязательное поле!') =>
+  isRequired: ({ msg = 'Обязательное поле!' }) =>
     (data) => {
       if (Array.isArray(data)) {
-        return data.length ? false : error;
+        return data.length ? false : msg;
       }
       if (typeof data === 'object') {
-        return Object.keys(data).length ? false : error;
+        return Object.keys(data).length ? false : msg;
       }
-      return data ? false : error;
+      return data ? false : msg;
     },
 
-  isEmail: (error = 'Неверный формат Email') =>
-    (data) => (data.toLowerCase()
+  isEmail: ({ msg = 'Неверный формат Email' }) =>
+    (data) => (String(data).toLowerCase()
       .match(/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/)
       ? false
-      : error),
+      : msg),
 
-  isYearBorn: (error = 'Год рождения некорректен') =>
-    (data) => (+data < (new Date().getFullYear() - 110) || +data >= new Date().getFullYear()
-      ? error
+  isYearBorn: ({ msg = 'Год рождения некорректен' }) =>
+    (data) => (data && (+data < (new Date().getFullYear() - 110) || +data >= new Date().getFullYear())
+      ? msg
       : false),
 
-  isLink: (error = 'Неверный формат ссылки') =>
-    (data) => (data.toLowerCase()
-      .match(/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/)
+  isLink: ({ msg = 'Неверный формат ссылки' }) =>
+    (data) => (String(data).toLowerCase()
+      .match(/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)/)
       ? false
-      : error),
+      : msg),
+
+  min: ({ len = 3, msg = 'Слишком короткая запись' }) =>
+    (data) => (String(data).trim().length >= len
+      ? false
+      : msg),
+
+  max: ({ len = 3, msg = 'Слишком длинная запись' }) =>
+    (data) => (String(data).trim().length <= len
+      ? false
+      : msg),
 };
 
-export default (...fns : Function[]) =>
-  (x : number | string | object | Array<object>) : string => {
+export default (...fns : Fnctn[]) : Fnctn =>
+  (x) => {
     try {
       fns.reduce((a, f) => {
         const currentError : string | false = f(a);
