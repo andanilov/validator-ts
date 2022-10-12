@@ -23,7 +23,8 @@ exports.rules = {
     },
     isYearBorn: function (_a) {
         var _b = _a.msg, msg = _b === void 0 ? 'Год рождения некорректен' : _b;
-        return function (data) { return (data && (+data < (new Date().getFullYear() - 110) || +data >= new Date().getFullYear())
+        return function (data) { return (data
+            && (+data < (new Date().getFullYear() - 110) || +data >= new Date().getFullYear())
             ? msg
             : false); };
     },
@@ -43,6 +44,12 @@ exports.rules = {
     max: function (_a) {
         var _b = _a.len, len = _b === void 0 ? 3 : _b, _c = _a.msg, msg = _c === void 0 ? 'Слишком длинная запись' : _c;
         return function (data) { return (String(data).trim().length <= len
+            ? false
+            : msg); };
+    },
+    isSimilar: function (_a) {
+        var original = _a.original, _b = _a.msg, msg = _b === void 0 ? 'Данные не совпадают' : _b;
+        return function (data) { return ((String(data).trim() === String(original).trim())
             ? false
             : msg); };
     }
